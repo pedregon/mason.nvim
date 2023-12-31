@@ -80,14 +80,16 @@ function M.init(opts)
                 )
             or _.list_not_nil(vim.g.python3_host_prog and vim.fn.expand(vim.g.python3_host_prog), "python3", "python")
 
-        -- pip3 will hardcode the full path to venv executables, so we need to promote cwd to make sure pip uses the final destination path.
-        ctx:promote_cwd()
+        if not opts.no_venv then
+            -- pip3 will hardcode the full path to venv executables, so we need to promote cwd to make sure pip uses the final destination path.
+            ctx:promote_cwd()
 
-        ctx.stdio_sink.stdout "Creating virtual environment…\n"
-        try(create_venv(executables))
+            ctx.stdio_sink.stdout "Creating virtual environment…\n"
+            try(create_venv(executables))
+        end
 
         if opts.upgrade_pip then
-            ctx.stdio_sink.stdout "Upgrading pip inside the virtual environment…\n"
+            ctx.stdio_sink.stdout "Upgrading pip…\n"
             try(pip_install({ "pip" }, opts.install_extra_args))
         end
     end)
